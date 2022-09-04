@@ -1,0 +1,36 @@
+{
+  "name": "adonis",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ace serve --watch",
+    "build": "node ace build --production",
+    "start": "node server.js"
+  },
+  "devDependencies": {
+    "@adonisjs/assembler": "^5.8.1",
+    "@japa/preset-adonis": "^1.1.0",
+    "@japa/runner": "^2.0.9",
+    "adonis-preset-ts": "^2.1.0",
+    "pino-pretty": "^8.1.0",
+    "typescript": "~4.6",
+    "youch": "^3.2.0",
+    "youch-terminal": "^2.1.4"
+  },
+  "dependencies": {
+    "@adonisjs/auth": "^8.2.2",
+    "@adonisjs/core": "^5.8.5",
+    "@adonisjs/lucid": "^18.1.0",
+    "@adonisjs/repl": "^3.1.11",
+    "@adonisjs/shield": "^7.0.11",
+    "luxon": "^3.0.3",
+    "mysql": "^2.18.1",
+    "pg": "^8.8.0",
+    "phc-argon2": "^1.1.3",
+    "phc-bcrypt": "^1.0.7",
+    "proxy-addr": "^2.0.7",
+    "reflect-metadata": "^0.1.13",
+    "source-map-support": "^0.5.21",
+    "sqlite3": "^5.0.11"
+  }
+}
