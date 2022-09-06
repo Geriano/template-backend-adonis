@@ -3,7 +3,6 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { string } from '@ioc:Adonis/Core/Helpers'
 import Application from '@ioc:Adonis/Core/Application'
 import Hash from '@ioc:Adonis/Core/Hash'
-import Route from '@ioc:Adonis/Core/Route'
 import User from 'App/Models/User'
 
 export default class AuthController {
@@ -216,6 +215,53 @@ export default class AuthController {
 
     return {
       message: 'can\'t delete profile photo',
+    }
+  }
+
+  public async updatePassword({ auth, request, response }: HttpContextContract) {
+    const user = await auth.use('api').authenticate()
+    const { current_password, password } = await request.validate({
+      schema: schema.create({
+        current_password: schema.string({ trim: true }, [
+          rules.required(),
+          rules.minLength(8),
+          rules.maxLength(255),
+        ]),
+
+        password: schema.string({ trim: true }, [
+          rules.required(),
+          rules.minLength(8),
+          rules.maxLength(255),
+        ]),
+
+        password_confirmation: schema.string({ trim: true }, [
+          rules.required(),
+          rules.equalTo('password'),
+        ]),
+      }),
+    })
+    
+    if (!await Hash.verify(user.password, current_password)) {
+      return response.abort({
+        errors: [{
+          field: 'current_password',
+          message: 'wrong password',
+        }],
+      }, 422)
+    }
+
+    user.password = password
+
+    if (await user.save()) {
+      return {
+        success: true,
+        message: 'password has been updated',
+      }
+    }
+
+    return {
+      success: false,
+      message: 'can\'t update password',
     }
   }
 }

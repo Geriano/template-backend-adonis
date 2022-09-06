@@ -30,6 +30,7 @@ Route.post('/register', 'AuthController.register').as('register')
 Route.post('/logout', 'AuthController.logout').as('logout')
 Route.patch('/update-user-general-information', 'AuthController.updateGeneralInformation').as('update-user-general-information')
 Route.delete('/remove-profile-photo', 'AuthController.removeProfilePhoto').as('remove-profile-photo')
+Route.patch('/update-user-password', 'AuthController.updatePassword').as('update-user-password')
 
 Route.group(() => {
   Route.resource('permission', 'Superuser/Permission')
