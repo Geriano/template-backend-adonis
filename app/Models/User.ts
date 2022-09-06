@@ -23,6 +23,9 @@ export default class User extends BaseModel {
   @column()
   public rememberMeToken?: string
 
+  @column()
+  public profilePhotoUrl: string|null;
+
   @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 

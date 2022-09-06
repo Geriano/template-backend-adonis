@@ -19,6 +19,8 @@ export default class UsersSchema extends BaseSchema {
             .notNullable()
       table.string('remember_me_token')
             .nullable()
+      table.string('profile_photo_url')
+            .nullable()
 
       /**
        * Uses timestampz for PostgreSQL and DATETIME2 for MSSQL

@@ -1,6 +1,9 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
+import { string } from '@ioc:Adonis/Core/Helpers'
+import Application from '@ioc:Adonis/Core/Application'
 import Hash from '@ioc:Adonis/Core/Hash'
+import Route from '@ioc:Adonis/Core/Route'
 import User from 'App/Models/User'
 
 export default class AuthController {
@@ -130,6 +133,89 @@ export default class AuthController {
 
     return {
       message: 'token successfully revoked'
+    }
+  }
+
+  public async updateGeneralInformation({ auth, request }: HttpContextContract) {
+    const user: User = await auth.use('api').authenticate(), trim = true
+    const { photo, name, username, email } = await request.validate({
+      schema: schema.create({
+        name: schema.string({ trim }, [
+          rules.required(),
+          rules.minLength(1),
+          rules.maxLength(255),
+        ]),
+
+        username: schema.string({ trim }, [
+          rules.required(),
+          rules.minLength(2),
+          rules.maxLength(255),
+          rules.unique({
+            table: 'users',
+            column: 'username',
+            caseInsensitive: true,
+            whereNot: { id: user.id },
+          }),
+        ]),
+
+        email: schema.string({ trim }, [
+          rules.required(),
+          rules.minLength(6),
+          rules.maxLength(255),
+          rules.unique({
+            table: 'users',
+            column: 'email',
+            caseInsensitive: true,
+            whereNot: { id: user.id },
+          }),
+        ]),
+
+        photo: schema.file.nullable({
+          extnames: ['jpg', 'jpeg', 'png'],
+        }),
+      }),
+    })
+
+    if (photo && photo.isValid) {
+      const filename = string.generateRandom(32)
+      const ext = photo.extname || ''
+      const path = filename + (ext ? '.' + ext : ext)
+      
+      await photo.move(Application.publicPath('uploads'), {
+        name: path,
+        overwrite: true,
+      })
+
+      user.profilePhotoUrl = `/uploads/${path}`
+    }
+    
+    user.name = name
+    user.username = username
+    user.email = email
+
+    if (await user.save()) {
+      return {
+        message: 'profile successfully updated',
+      }
+    }
+
+    return {
+      message: 'can\'t update profile',
+    }
+  }
+
+  public async removeProfilePhoto({ auth }: HttpContextContract) {
+    const user = await auth.use('api').authenticate()
+    user.profilePhotoUrl = null
+
+    if (await user.save()) {
+      return {
+        message: 'profile photo has been deleted',
+      }
+    }
+
+    return {
+      message: 'can\'t delete profile photo',
     }
   }
 }
