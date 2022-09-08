@@ -33,5 +33,10 @@ Route.delete('/remove-profile-photo', 'AuthController.removeProfilePhoto').as('r
 Route.patch('/update-user-password', 'AuthController.updatePassword').as('update-user-password')
 
 Route.group(() => {
-  Route.resource('permission', 'Superuser/Permission')
+  Route.group(() => {
+    Route.get('/', 'Superuser/PermissionController.index').as('index')
+    Route.post('/', 'Superuser/PermissionController.store').as('store')
+    Route.patch('/:permission', 'Superuser/PermissionController.update').as('update')
+    Route.delete('/:permission', 'Superuser/PermissionController.destroy').as('destroy')
+  }).prefix('/permission').as('permission.')
 }).prefix('/superuser').as('superuser.')
