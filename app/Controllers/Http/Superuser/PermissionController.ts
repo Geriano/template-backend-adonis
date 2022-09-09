@@ -6,7 +6,7 @@ export default class PermissionsController {
   public async index({ auth }: HttpContextContract) {
     await auth.use('api').authenticate()
 
-    return await Permission.all()
+    return await Permission.query().orderBy('name').exec()
   }
 
   public async store({ auth, request }: HttpContextContract) {
