@@ -64,7 +64,7 @@ export default class PermissionController {
 
       return {
         type: 'success',
-        message: `permission ${permission.name} has been created`
+        message: `permission ${permission.name} has been updated`
       }
     } catch (e) {
       return {
