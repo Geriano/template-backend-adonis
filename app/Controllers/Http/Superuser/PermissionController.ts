@@ -2,7 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Permission from 'App/Models/Superuser/Permission'
 
-export default class PermissionsController {
+export default class PermissionController {
   public async index({ auth }: HttpContextContract) {
     await auth.use('api').authenticate()
 
