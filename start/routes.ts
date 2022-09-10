@@ -38,7 +38,7 @@ Route.group(() => {
     Route.post('/', 'Superuser/PermissionController.store').as('store')
     Route.patch('/:permission', 'Superuser/PermissionController.update').as('update')
     Route.delete('/:permission', 'Superuser/PermissionController.destroy').as('destroy')
-  }).prefix('/permission').as('permission.')
+  }).prefix('/permission').as('permission')
 
   Route.group(() => {
     Route.get('/', 'Superuser/RoleController.index').as('index')
@@ -46,12 +46,12 @@ Route.group(() => {
     Route.patch('/:role', 'Superuser/RoleController.update').as('update')
     Route.delete('/:role', 'Superuser/RoleController.destroy').as('destroy')
     Route.post('/paginate', 'Superuser/RoleController.paginate').as('paginate')
-  }).prefix('/role').as('role.')
+  }).prefix('/role').as('role')
 
   Route.group(() => {
     Route.post('/', 'Superuser/UserController.store').as('store')
     Route.patch('/:user', 'Superuser/UserController.update').as('update')
     Route.delete('/:user', 'Superuser/UserController.destroy').as('destroy')
     Route.post('/paginate', 'Superuser/UserController.index').as('index')
-  }).prefix('/user').as('user.')
-}).prefix('/superuser').as('superuser.')
+  }).prefix('/user').as('user')
+}).prefix('/superuser').as('superuser')
