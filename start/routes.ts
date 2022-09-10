@@ -47,4 +47,11 @@ Route.group(() => {
     Route.delete('/:role', 'Superuser/RoleController.destroy').as('destroy')
     Route.post('/paginate', 'Superuser/RoleController.paginate').as('paginate')
   }).prefix('/role').as('role.')
+
+  Route.group(() => {
+    Route.post('/', 'Superuser/UserController.store').as('store')
+    Route.patch('/:user', 'Superuser/UserController.update').as('update')
+    Route.delete('/:user', 'Superuser/UserController.destroy').as('destroy')
+    Route.post('/paginate', 'Superuser/UserController.index').as('index')
+  }).prefix('/user').as('user.')
 }).prefix('/superuser').as('superuser.')
