@@ -3,7 +3,15 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Role from 'App/Models/Superuser/Role'
 
 export default class RoleController {
-  public async index({ auth, request }: HttpContextContract) {
+  public async index({ auth }: HttpContextContract) {
+    await auth.use('api').authenticate()
+
+    return await Role.query()
+                      .preload('permissions')
+                      .exec()
+  }
+
+  public async paginate({ auth, request }: HttpContextContract) {
     await auth.use('api').authenticate()
 
     const { page, per_page, search, order } = await request.validate({
