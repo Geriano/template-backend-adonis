@@ -73,7 +73,7 @@ export default class UserController {
           rules.equalTo('password'),
         ]),
 
-        roles: schema.array().members(schema.number([
+        roles: schema.array.optional().members(schema.number([
           rules.exists({
             table: 'roles',
             column: 'id',
@@ -84,7 +84,7 @@ export default class UserController {
 
     try {
       const user = await User.create({ name, username, email, password })
-      await user.related('roles').attach(roles)
+      roles && await user.related('roles').attach(roles)
 
       return {
         type: 'success',
@@ -144,7 +144,7 @@ export default class UserController {
           rules.equalTo('password'),
         ]),
 
-        roles: schema.array().members(schema.number([
+        roles: schema.array.optional().members(schema.number([
           rules.exists({
             table: 'roles',
             column: 'id',
@@ -159,7 +159,7 @@ export default class UserController {
       user.email = email
       user.password = password
       user = await user.save()
-      await user.related('roles').sync(roles)
+      roles && await user.related('roles').sync(roles)
 
       return {
         type: 'success',
