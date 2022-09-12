@@ -54,4 +54,14 @@ Route.group(() => {
     Route.delete('/:user', 'Superuser/UserController.destroy').as('destroy')
     Route.post('/paginate', 'Superuser/UserController.index').as('index')
   }).prefix('/user').as('user')
-}).prefix('/superuser').as('superuser')
+
+  Route.group(() => {
+    Route.get('/', 'Superuser/MenuController.index').as('index')
+    Route.post('/', 'Superuser/MenuController.store').as('store')
+    Route.patch('/save', 'Superuser/MenuController.save').as('save')
+    Route.patch('/:menu', 'Superuser/MenuController.update').as('update')
+    Route.delete('/:menu', 'Superuser/MenuController.destroy').as('destroy')
+  }).prefix('/menu').as('menu')
+}).prefix('/superuser').as('superuser').middleware('auth')
+
+Route.get('/menu', 'Superuser/MenuController.index').as('menu.index').middleware('auth')
