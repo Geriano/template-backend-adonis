@@ -67,6 +67,7 @@ export default class Menu extends BaseModel {
 
   @beforeCreate()
   public static async generateMenuPosition(menu: Menu) {
+    if (menu.position) return
     const position = await Menu.query()
                                 .where(query => {
                                   menu.parent_id ? query.where('parent_id', menu.parent_id) : query.whereNull('parent_id')

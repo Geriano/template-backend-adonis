@@ -132,7 +132,7 @@ export default class MenuController {
       const { id, name, icon, parent_id, position, childs } = menu
 
       if (childs?.length) {
-        return childs.flatMap(flatMap)
+        return [ { id, name, icon, parent_id, position }, ...childs.flatMap(flatMap) ]
       }
 
       return [
@@ -153,13 +153,16 @@ export default class MenuController {
       }))
     }
 
-    const result = position(menus).flatMap(flatMap)
+    const result = position(menus)
+    const mapped = result.flatMap(flatMap)
 
-    for (const m of result) {
-      await Menu.query().where('id', m.id).update({
-        parent_id: m.parent_id,
-        position: m.position,
-      }).exec()
+    for (const m of mapped) {
+      const menu = await Menu.findOrFail(m.id)
+
+      menu.parent_id = m.parent_id
+      menu.position = m.position
+
+      await menu.save()
     }
 
     return position(menus)
