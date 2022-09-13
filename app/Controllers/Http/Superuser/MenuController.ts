@@ -22,12 +22,13 @@ export default class MenuController {
                       })
                       .orderBy('position')
                       .preload('childs')
+                      .preload('permissions')
 
     return await query.exec()
   }
 
   public async store({ request }: HttpContextContract) {
-    const { name, icon, route_or_url, actives } = await request.validate({
+    const { name, icon, route_or_url, actives, permissions } = await request.validate({
       schema: schema.create({
         name: schema.string({ trim: true, }, [
           rules.required(),
@@ -46,12 +47,21 @@ export default class MenuController {
         actives: schema.array.optional().members(schema.string({ trim: true }, [
           rules.maxLength(255),
         ])),
+
+        permissions: schema.array.optional().members(schema.number([
+          rules.exists({
+            table: 'permissions',
+            column: 'id',
+          }),
+        ])),
       }),
     })
 
     const menu = await Menu.create({ name, icon: icon || 'mdi mdi-circle', routeOrUrl: route_or_url, actives: JSON.stringify(actives || []) })
 
     if (menu) {
+      permissions && await menu.related('permissions').attach(permissions)
+
       return {
         type: 'success',
         message: `menu ${menu.name} has been created`,
@@ -67,7 +77,7 @@ export default class MenuController {
   public async update({ request, params }: HttpContextContract) {
     const menu = await Menu.findOrFail(params.menu)
 
-    const { name, icon, route_or_url, actives } = await request.validate({
+    const { name, icon, route_or_url, actives, permissions } = await request.validate({
       schema: schema.create({
         name: schema.string({ trim: true, }, [
           rules.required(),
@@ -86,6 +96,13 @@ export default class MenuController {
         actives: schema.array.optional().members(schema.string({ trim: true }, [
           rules.maxLength(255),
         ])),
+
+        permissions: schema.array.optional().members(schema.number([
+          rules.exists({
+            table: 'permissions',
+            column: 'id',
+          }),
+        ])),
       }),
     })
 
@@ -95,6 +112,8 @@ export default class MenuController {
     menu.actives = JSON.stringify(actives || [])
 
     if (await menu.save()) {
+      permissions && await menu.related('permissions').sync(permissions)
+
       return {
         type: 'success',
         message: `menu ${menu.name} has been updated`,

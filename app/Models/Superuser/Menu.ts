@@ -46,6 +46,7 @@ export default class Menu extends BaseModel {
     foreignKey: 'parent_id',
     onQuery: query => {
       query.preload('childs')
+            .preload('permissions')
             .orderBy('position')
 
       if (!Menu.user) return query.doesntHave('permissions')
