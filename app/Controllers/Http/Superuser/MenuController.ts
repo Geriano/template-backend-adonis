@@ -9,8 +9,6 @@ export default class MenuController {
     await user.load('permissions')
     await user.load('roles')
 
-    Menu.user = user
-
     const permissions = user.roles.reduce((permissions, role) => [...permissions, ...role.permissions], user.permissions)
                                   .map((permission: Permission) => permission.id)
 

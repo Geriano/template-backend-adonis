@@ -1,7 +1,7 @@
+import HttpContext from '@ioc:Adonis/Core/HttpContext'
 import { DateTime } from 'luxon'
 import { BaseModel, beforeCreate, BelongsTo, belongsTo, column, HasMany, hasMany, ManyToMany, manyToMany } from '@ioc:Adonis/Lucid/Orm'
 import Permission from './Permission'
-import User from '../User'
 
 
 export default class Menu extends BaseModel {
@@ -25,6 +25,8 @@ export default class Menu extends BaseModel {
 
   @column({
     serialize: (value: any, attribute: string, model: Menu) => {
+      attribute
+      model
       return JSON.parse(value)
     },
   })
@@ -39,19 +41,23 @@ export default class Menu extends BaseModel {
   @manyToMany(() => Permission)
   public permissions: ManyToMany<typeof Permission>
 
-  public static user: User
-
   @hasMany(() => Menu, {
     localKey: 'id',
     foreignKey: 'parent_id',
-    onQuery: query => {
+    onQuery: async query => {
       query.preload('childs')
             .preload('permissions')
             .orderBy('position')
 
-      if (!Menu.user) return query.doesntHave('permissions')
+      const ctx = HttpContext.get()!
+      const user = ctx.auth.user
 
-      const permissions = Menu.user.roles.reduce((permissions, role) => [...permissions, ...role.permissions], Menu.user.permissions)
+      if (!user) return query.doesntHave('permissions')
+
+      await user.load('permissions')
+      await user.load('roles')
+
+      const permissions = user.roles.reduce((permissions, role) => [...permissions, ...role.permissions], user.permissions)
                                           .map((permission: Permission) => permission.id)
 
       query.orDoesntHave('permissions')
