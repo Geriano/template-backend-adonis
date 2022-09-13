@@ -2,6 +2,7 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import { string } from '@ioc:Adonis/Core/Helpers'
 import Application from '@ioc:Adonis/Core/Application'
+import Event from '@ioc:Adonis/Core/Event'
 import Hash from '@ioc:Adonis/Core/Hash'
 import User from 'App/Models/User'
 
@@ -78,13 +79,24 @@ export default class AuthController {
       },
     })
 
-    const user = await User.create({
-      name, username, email, password,
-    })
+    try {
+      const user = await User.create({
+        name, username, email, password,
+      })
 
-    return {
-      message: `user ${user.name} has been created`,
+      Event.emit('registered', user)
+  
+      return {
+        type: 'success',
+        message: `user ${user.name} has been created`,
+      }
+    } catch (e) {
+      return {
+        type: 'error',
+        message: `${e}`,
+      }
     }
+
   }
 
   public async login({ auth, request, response }: HttpContextContract) {
@@ -115,6 +127,8 @@ export default class AuthController {
         expiresIn: '1 day',
       })
 
+      Event.emit('login', user)
+
       return {
         message: 'authenticated',
         type,
@@ -128,9 +142,13 @@ export default class AuthController {
   }
 
   public async logout({ auth }: HttpContextContract) {
+    const user = await auth.use('api').authenticate()
     await auth.use('api').revoke()
 
+    Event.emit('logout', user)
+
     return {
+      type: 'success',
       message: 'token successfully revoked'
     }
   }
