@@ -3,9 +3,7 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import User from 'App/Models/User'
 
 export default class UserController {
-  public async index({ auth, request }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
+  public async index({ request }: HttpContextContract) {
     const { page, per_page, search, order } = await request.validate({
       schema: schema.create({
         page: schema.number([
@@ -35,9 +33,7 @@ export default class UserController {
                       .paginate(page, per_page)
   }
 
-  public async store({ auth, request }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
+  public async store({ request }: HttpContextContract) {
     const { name, username, email, password, roles } = await request.validate({
       schema: schema.create({
         name: schema.string({ trim: true }, [
@@ -98,9 +94,7 @@ export default class UserController {
     }
   }
 
-  public async update({ auth, request, params }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
+  public async update({ request, params }: HttpContextContract) {
     let user = await User.findOrFail(params.user)
 
     const { name, username, email, password, roles } = await request.validate({
@@ -173,8 +167,7 @@ export default class UserController {
     }
   }
 
-  public async destroy({ auth, params }: HttpContextContract) {
-    await auth.use('api').authenticate()
+  public async destroy({ params }: HttpContextContract) {
     const user = await User.findOrFail(params.user)
 
     try {

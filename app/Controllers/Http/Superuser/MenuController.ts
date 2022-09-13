@@ -5,7 +5,7 @@ import Permission from 'App/Models/Superuser/Permission'
 
 export default class MenuController {
   public async index({ auth }: HttpContextContract) {
-    const user = await auth.use('api').authenticate()
+    const user = auth.user!
     await user.load('permissions')
     await user.load('roles')
 

@@ -3,14 +3,12 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Permission from 'App/Models/Superuser/Permission'
 
 export default class PermissionController {
-  public async index({ auth }: HttpContextContract) {
-    await auth.use('api').authenticate()
+  public async index({}: HttpContextContract) {
 
     return await Permission.query().orderBy('name').exec()
   }
 
-  public async store({ auth, request }: HttpContextContract) {
-    await auth.use('api').authenticate()
+  public async store({ request }: HttpContextContract) {
 
     const { name } = await request.validate({
       schema: schema.create({
@@ -40,8 +38,7 @@ export default class PermissionController {
     }
   }
 
-  public async update({ auth, request, params }: HttpContextContract) {
-    await auth.use('api').authenticate()
+  public async update({ request, params }: HttpContextContract) {
 
     const { name } = await request.validate({
       schema: schema.create({
@@ -74,8 +71,7 @@ export default class PermissionController {
     }
   }
 
-  public async destroy({ auth, params }: HttpContextContract) {
-    await auth.use('api').authenticate()
+  public async destroy({ params }: HttpContextContract) {
     const permission = await Permission.findOrFail(params.permission)
 
     try {

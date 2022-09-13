@@ -3,17 +3,13 @@ import { schema, rules } from '@ioc:Adonis/Core/Validator'
 import Role from 'App/Models/Superuser/Role'
 
 export default class RoleController {
-  public async index({ auth }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
+  public async index({}: HttpContextContract) {
     return await Role.query()
                       .preload('permissions')
                       .exec()
   }
 
-  public async paginate({ auth, request }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
+  public async paginate({ request }: HttpContextContract) {
     const { page, per_page, search, order } = await request.validate({
       schema: schema.create({
         page: schema.number([
@@ -38,9 +34,7 @@ export default class RoleController {
                       .paginate(page, per_page)
   }
 
-  public async store({ auth, request }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
+  public async store({ request }: HttpContextContract) {
     const { name, permissions } = await request.validate({
       schema: schema.create({
         name: schema.string({ trim: true }, [
@@ -77,9 +71,7 @@ export default class RoleController {
     }
   }
 
-  public async update({ auth, request, params }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
+  public async update({ request, params }: HttpContextContract) {
     let role = await Role.findOrFail(params.role)
 
     const { name, permissions } = await request.validate({
@@ -122,8 +114,7 @@ export default class RoleController {
     }
   }
 
-  public async destroy({ auth, params }: HttpContextContract) {
-    await auth.use('api').authenticate()
+  public async destroy({ params }: HttpContextContract) {
     const role = await Role.findOrFail(params.role)
 
     try {
