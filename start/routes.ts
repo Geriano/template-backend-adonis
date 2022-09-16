@@ -62,6 +62,6 @@ Route.group(() => {
     Route.patch('/:menu', 'Superuser/MenuController.update').as('update')
     Route.delete('/:menu', 'Superuser/MenuController.destroy').as('destroy')
   }).prefix('/menu').as('menu')
-}).prefix('/superuser').as('superuser').middleware('auth')
+}).prefix('/superuser').as('superuser').middleware(['auth', 'role:superuser'])
 
 Route.get('/menu', 'Superuser/MenuController.index').as('menu.index').middleware('auth')
