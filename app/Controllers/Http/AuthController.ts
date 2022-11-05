@@ -8,8 +8,6 @@ import User from 'App/Models/User'
 
 export default class AuthController {
   public async user({ auth }: HttpContextContract) {
-    await auth.use('api').authenticate()
-
     const user = auth.user!
     await user.load('permissions')
     await user.load('roles')
