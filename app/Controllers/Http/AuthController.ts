@@ -127,8 +127,12 @@ export default class AuthController {
 
       Event.emit('login', user)
 
+      await user.load('permissions')
+      await user.load('roles')
+
       return {
         message: 'authenticated',
+        user,
         type,
         token,
         expiresAt,
