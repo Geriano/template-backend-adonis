@@ -189,7 +189,7 @@ export default class AuthController {
           }),
         ]),
 
-        photo: schema.file.nullable({
+        photo: schema.file.nullableAndOptional({
           extnames: ['jpg', 'jpeg', 'png'],
         }),
       }),
