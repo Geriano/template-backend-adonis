@@ -7,6 +7,14 @@ export default class RequestMonitoringsController {
   public async index({ request }: HttpContextContract) {
     const avg = (a: number[]) => a.reduce((total, b) => total + b, 0) / a.length
     const urls = await this.urls()
+
+    if (urls.length === 0) {
+      return {
+        urls: [],
+        times: [],
+      }
+    }
+
     const requests = await Request.query()
                                   .select('url', 'start', 'finish')
                                   .whereIn('url', urls)
@@ -17,7 +25,7 @@ export default class RequestMonitoringsController {
       const name = url.replace(/\/|\.|\-/g, '_')
       return `(SELECT COUNT(*) FROM requests WHERE url = ?) as ${name}`
     }).join(',')
-
+    
     const countResult = await Database.rawQuery(`SELECT ${query}`, urls).exec()
     const count = JSON.parse(JSON.stringify(countResult[0][0])) as {
       [key in typeof urls as string]: number
