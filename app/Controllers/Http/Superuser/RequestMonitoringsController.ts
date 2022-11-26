@@ -34,8 +34,8 @@ export default class RequestMonitoringsController {
     const collections = Object.fromEntries(urls.map(url => {
       const c = count[url.replace(/\/|\.|\-/g, '_')]
       return [
-        `${url}(${c})`, {
-          time: avg(requests.filter(r => r.url === url).map(r => r.finish - r.start)),
+        `${url}`, {
+          time: requests.filter(r => r.url === url).map(r => r.finish - r.start),
           count: c,
         },
       ]
