@@ -1,4 +1,5 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import Database from '@ioc:Adonis/Lucid/Database';
 
 import Request from "App/Models/Request";
 
@@ -12,8 +13,18 @@ export default class RequestMonitoringsController {
                                   .whereNotNull('finish')
                                   .exec()
 
+    const query = urls.map(url => {
+      const name = url.replace(/\/|\.|\-/g, '_')
+      return `(SELECT COUNT(*) FROM requests WHERE url = ?) as ${name}`
+    }).join(',')
+
+    const countResult = await Database.rawQuery(`SELECT ${query}`, urls).exec()
+    const count = JSON.parse(JSON.stringify(countResult[0][0])) as {
+      [key in typeof urls as string]: number
+    }
+
     const collections = Object.fromEntries(urls.map(url => [
-      url, avg(requests.filter(r => r.url === url).map(r => r.finish - r.start))
+      `${url}(${count[url.replace(/\/|\.|\-/g, '_')]})`, avg(requests.filter(r => r.url === url).map(r => r.finish - r.start))
     ]))
 
     return {
