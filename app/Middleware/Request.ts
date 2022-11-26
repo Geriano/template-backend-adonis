@@ -14,20 +14,21 @@ export default class Request {
       return iso.substring(0, iso.length - 5).replace('T', ' ')
     }
 
-    const start = new Date().getTime()
+    const start = date.getTime()
 
     await next()
 
-    const hit = await Req.create({
-      ipAddress,
-      url,
-      method,
-      start,
-      finish: new Date().getTime(),
-    })
+    if (url !== 'request') {
+      await Req.create({
+        ipAddress,
+        url,
+        method,
+        start,
+        finish: new Date().getTime(),
+      })
+    }
 
-    const diff = (new Date().getTime() - hit.start).toString().padStart(4, ' ')
-
+    const diff = (new Date().getTime() - start).toString().padStart(4, ' ')
     console.log(`[${iso(date)}] [${diff}ms] ${ipAddress} - ${method} ${url}`)
   }
 }
