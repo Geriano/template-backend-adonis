@@ -29,7 +29,9 @@ export default class UserController {
                               .orWhere('email', 'like', s)
                       })
                       .with('roles', query => query.where('name', 'like', `%${search}%`))
+                      .with('permissions', query => query.where('name', 'like', `%${search}%`))
                       .preload('roles')
+                      .preload('permissions')
                       .paginate(page, per_page)
   }
 
