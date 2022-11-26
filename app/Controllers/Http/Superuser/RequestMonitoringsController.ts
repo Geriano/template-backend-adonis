@@ -31,13 +31,20 @@ export default class RequestMonitoringsController {
       [key in typeof urls as string]: number
     }
 
-    const collections = Object.fromEntries(urls.map(url => [
-      `${url}(${count[url.replace(/\/|\.|\-/g, '_')]})`, avg(requests.filter(r => r.url === url).map(r => r.finish - r.start))
-    ]))
+    const collections = Object.fromEntries(urls.map(url => {
+      const c = count[url.replace(/\/|\.|\-/g, '_')]
+      return [
+        `${url}(${c})`, {
+          time: avg(requests.filter(r => r.url === url).map(r => r.finish - r.start)),
+          count: c,
+        },
+      ]
+    }))
 
     return {
       urls: Object.keys(collections),
-      times: Object.values(collections),
+      times: Object.values(collections).map(collection => collection.time),
+      counts: Object.values(collections).map(collection => collection.count),
     }
   }
 
