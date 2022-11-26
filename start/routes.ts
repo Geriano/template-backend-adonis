@@ -65,3 +65,4 @@ Route.group(() => {
 }).prefix('/superuser').as('superuser').middleware(['auth', 'role:superuser'])
 
 Route.get('/menu', 'Superuser/MenuController.index').as('menu.index').middleware('auth')
+Route.get('/superuser/request', 'Superuser/RequestMonitoringsController.index').as('request')

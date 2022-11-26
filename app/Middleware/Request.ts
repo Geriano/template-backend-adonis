@@ -2,9 +2,9 @@ import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import Req from 'App/Models/Request'
 
 export default class Request {
-  public async handle({ request }: HttpContextContract, next: () => Promise<void>) {
+  public async handle({ request, route }: HttpContextContract, next: () => Promise<void>) {
     const ipAddress = request.ip()
-    const url = request.url()
+    const url = route?.name || request.url()
     const method = request.method()
     const date = new Date()
     const iso = date => {
@@ -20,8 +20,6 @@ export default class Request {
       method,
       start: new Date().getTime(),
     })
-
-    await Req.query().whereNull('finish').delete()
 
     await next()
 
