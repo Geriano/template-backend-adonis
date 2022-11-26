@@ -36,7 +36,7 @@ export default class UserController {
   }
 
   public async store({ request }: HttpContextContract) {
-    const { name, username, email, password, roles } = await request.validate({
+    const { name, username, email, password, roles, permissions } = await request.validate({
       schema: schema.create({
         name: schema.string({ trim: true }, [
           rules.required(),
@@ -77,12 +77,20 @@ export default class UserController {
             column: 'id',
           }),
         ])),
+
+        permissions: schema.array.optional().members(schema.number([
+          rules.exists({
+            table: 'permissions',
+            column: 'id',
+          }),
+        ])),
       })
     })
 
     try {
       const user = await User.create({ name, username, email, password })
       roles && await user.related('roles').attach(roles)
+      permissions && await user.related('permissions').attach(permissions)
 
       return {
         type: 'success',
@@ -99,7 +107,7 @@ export default class UserController {
   public async update({ request, params }: HttpContextContract) {
     let user = await User.findOrFail(params.user)
 
-    const { name, username, email, password, roles } = await request.validate({
+    const { name, username, email, password, roles, permissions } = await request.validate({
       schema: schema.create({
         name: schema.string({ trim: true }, [
           rules.required(),
@@ -146,6 +154,13 @@ export default class UserController {
             column: 'id',
           }),
         ])),
+
+        permissions: schema.array.optional().members(schema.number([
+          rules.exists({
+            table: 'permissions',
+            column: 'id',
+          }),
+        ])),
       })
     })
 
@@ -156,6 +171,7 @@ export default class UserController {
       user.password = password
       user = await user.save()
       roles && await user.related('roles').sync(roles)
+      permissions && await user.related('permissions').sync(permissions)
 
       return {
         type: 'success',
